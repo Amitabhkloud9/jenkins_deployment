@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins-daac
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      securityContext:
+          fsGroup: 1000
+      containers:
+      - name: jenkins
+        image: mannydoc/custom_new1:v1
+        ports:
+        - containerPort: 8080
+      ### Mounting Jenkins Data directory to persistent Volume  
+        volumeMounts:
+              - name: jenkins-persistent-storage
+                mountPath: /var/jenkins_home
+      ### Definition for Persistent Volume Claim
+      volumes:
+      - name: jenkins-persistent-storage
+        persistentVolumeClaim:
+           claimName: jenkins-pvc
+
